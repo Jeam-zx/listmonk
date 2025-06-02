@@ -1,6 +1,6 @@
 <template>
   <!-- Two-way Data-Binding -->
-  <section class="editor">
+  <section class="editor" :class="{ 'editor-half-width': isPreviewing }">
     <div class="columns">
       <div class="column is-three-quarters is-inline-flex">
         <b-field :label="$t('campaigns.format')" label-position="on-border" class="mr-4 mb-0">
@@ -74,9 +74,18 @@
     <b-input v-if="self.contentType === 'plain'" v-model="self.body" type="textarea" name="content" ref="plainEditor"
       class="plain-editor" />
 
-    <!-- campaign preview //-->
-    <campaign-preview v-if="isPreviewing" is-post @close="onTogglePreview" type="campaign" :id="id" :title="title"
-      :content-type="self.contentType" :template-id="templateId" :body="self.body" />
+    <!-- campaign preview -->
+    <campaign-preview
+      v-if="isPreviewing"
+      :key="previewKey"
+      is-post
+      @close="onTogglePreview"
+      type="campaign"
+      :id="id"
+      :title="title"
+      :content-type="self.contentType"
+      :template-id="templateId"
+      :body="self.body" />
   </section>
 </template>
 
@@ -130,6 +139,7 @@ export default {
       contentTypeSel: this.$props.value.contentType,
       templateId: null,
       visualTemplateId: null,
+      previewKey: 0, // Clave para forzar la recarga de campaign-preview
     };
   },
 
@@ -365,6 +375,15 @@ export default {
       const typ = this.self.contentType === 'visual' ? 'campaign_visual' : 'campaign';
       return this.templates.filter((t) => (t.type === typ));
     },
+
+    // Propiedad computada para observar los datos relevantes para la previsualización
+    previewSourceData() {
+      return {
+        body: this.self.body,
+        contentType: this.self.contentType,
+        templateId: this.templateId,
+      };
+    },
   },
 
   watch: {
@@ -391,7 +410,29 @@ export default {
 
       this.self.templateId = to;
     },
+
+    // Observador para los datos de previsualización
+    previewSourceData: {
+      deep: true, // Observar cambios profundos (ej. en self.body)
+      handler() {
+        if (this.isPreviewing) {
+          this.previewKey += 1; // Cambiar la clave para forzar la recarga del preview
+        }
+      },
+    },
   },
 };
-
 </script>
+
+<style scoped>
+.editor {
+  transition: width 0.3s ease-in-out;
+  width: 100%; /* Por defecto, el editor ocupa todo el ancho */
+  height: 100vh; /* Opcional: para que ocupe toda la altura */
+  overflow-y: auto; /* Para el scroll si el contenido es largo */
+}
+
+.editor.editor-half-width {
+  width: 50%; /* Cuando el preview está activo, el editor ocupa la mitad */
+}
+</style>
