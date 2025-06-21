@@ -9,139 +9,141 @@
         </h1>
       </header>
 
-      <!-- Messages Sent Card -->
-      <div class="messages-card">
-        <div class="messages-content">
-          <div class="messages-info">
-            <svg class="message-icon" width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-            </svg>
-            <span class="messages-label">{{ $t('dashboard.messagesSent') || 'Mensajes enviados' }}</span>
-          </div>
-          <span class="messages-count">
-            {{ isCountsLoading ? '...' : $utils.niceNumber(counts.messages) }}
-          </span>
-        </div>
-      </div>
-
-      <!-- Stats Cards Grid -->
-      <div class="stats-grid">
-        <!-- Mis Listas -->
-        <div class="stat-card lists-card">
-          <div v-if="isCountsLoading" class="loading-overlay">
-            <div class="spinner"></div>
-          </div>
-          <div class="stat-content">
-            <div class="stat-header">
-              <svg class="stat-icon" width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+      <div class="scrollable-area">
+        <!-- Messages Sent Card -->
+        <div class="messages-card">
+          <div class="messages-content">
+            <div class="messages-info">
+              <svg class="message-icon" width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
               </svg>
-              <span class="stat-title">{{ $tc('globals.terms.list', 2) || 'Listas' }}</span>
+              <span class="messages-label">{{ $t('dashboard.messagesSent') || 'Mensajes enviados' }}</span>
             </div>
-            <div class="stat-details">
-              <div class="detail-item">{{ $utils.niceNumber(counts.lists.public || 0) }} {{ $t('lists.types.public') || 'Pública' }}</div>
-              <div class="detail-item">{{ $utils.niceNumber(counts.lists.private || 0) }} {{ $t('lists.types.private') || 'Privada' }}</div>
-              <div class="detail-item">{{ $utils.niceNumber(counts.lists.optinSingle || 0) }} {{ $t('lists.optins.single') || 'Confirmación simple' }}</div>
-              <div class="detail-item">{{ $utils.niceNumber(counts.lists.optinDouble || 0) }} {{ $t('lists.optins.double') || 'Confirmación doble' }}</div>
-            </div>
-          </div>
-          <div class="stat-number">
-            {{ isCountsLoading ? '...' : $utils.niceNumber(counts.lists.total || 0) }}
+            <span class="messages-count">
+              {{ isCountsLoading ? '...' : $utils.niceNumber(counts.messages) }}
+            </span>
           </div>
         </div>
 
-        <!-- Suscriptores -->
-        <div class="stat-card subscribers-card">
-          <div v-if="isCountsLoading" class="loading-overlay">
-            <div class="spinner"></div>
-          </div>
-          <div class="stat-content">
-            <div class="stat-header">
-              <svg class="stat-icon" width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
-              </svg>
-              <span class="stat-title">{{ $tc('globals.terms.subscriber', 2) || 'Suscriptores' }}</span>
+        <!-- Stats Cards Grid -->
+        <div class="stats-grid">
+          <!-- Mis Listas -->
+          <div class="stat-card lists-card">
+            <div v-if="isCountsLoading" class="loading-overlay">
+              <div class="spinner"></div>
             </div>
-            <div class="stat-details">
-              <div class="detail-item">{{ $utils.niceNumber(counts.subscribers.blocklisted || 0) }} {{ $t('subscribers.status.blocklisted') || 'Bloqueada' }}</div>
-              <div class="detail-item">{{ $utils.niceNumber(counts.subscribers.orphans || 0) }} {{ $t('dashboard.orphanSubs') || 'Huérfanos' }}</div>
+            <div class="stat-content">
+              <div class="stat-header">
+                <svg class="stat-icon" width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                </svg>
+                <span class="stat-title">{{ $tc('globals.terms.list', 2) || 'Listas' }}</span>
+              </div>
+              <div class="stat-details">
+                <div class="detail-item">{{ $utils.niceNumber(counts.lists.public || 0) }} {{ $t('lists.types.public') || 'Pública' }}</div>
+                <div class="detail-item">{{ $utils.niceNumber(counts.lists.private || 0) }} {{ $t('lists.types.private') || 'Privada' }}</div>
+                <div class="detail-item">{{ $utils.niceNumber(counts.lists.optinSingle || 0) }} {{ $t('lists.optins.single') || 'Confirmación simple' }}</div>
+                <div class="detail-item">{{ $utils.niceNumber(counts.lists.optinDouble || 0) }} {{ $t('lists.optins.double') || 'Confirmación doble' }}</div>
+              </div>
+            </div>
+            <div class="stat-number">
+              {{ isCountsLoading ? '...' : $utils.niceNumber(counts.lists.total || 0) }}
             </div>
           </div>
-          <div class="stat-number">
-            {{ isCountsLoading ? '...' : formatLargeNumber(counts.subscribers.total || 0) }}
+
+          <!-- Suscriptores -->
+          <div class="stat-card subscribers-card">
+            <div v-if="isCountsLoading" class="loading-overlay">
+              <div class="spinner"></div>
+            </div>
+            <div class="stat-content">
+              <div class="stat-header">
+                <svg class="stat-icon" width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+                </svg>
+                <span class="stat-title">{{ $tc('globals.terms.subscriber', 2) || 'Suscriptores' }}</span>
+              </div>
+              <div class="stat-details">
+                <div class="detail-item">{{ $utils.niceNumber(counts.subscribers.blocklisted || 0) }} {{ $t('subscribers.status.blocklisted') || 'Bloqueada' }}</div>
+                <div class="detail-item">{{ $utils.niceNumber(counts.subscribers.orphans || 0) }} {{ $t('dashboard.orphanSubs') || 'Huérfanos' }}</div>
+              </div>
+            </div>
+            <div class="stat-number">
+              {{ isCountsLoading ? '...' : formatLargeNumber(counts.subscribers.total || 0) }}
+            </div>
+          </div>
+
+          <!-- Campañas -->
+          <div class="stat-card campaigns-card">
+            <div v-if="isCountsLoading" class="loading-overlay">
+              <div class="spinner"></div>
+            </div>
+            <div class="stat-content">
+              <div class="stat-header">
+                <svg class="stat-icon" width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
+                </svg>
+                <span class="stat-title">{{ $tc('globals.terms.campaign', 2) || 'Campañas' }}</span>
+              </div>
+              <div class="stat-details">
+                <div v-for="(num, status) in counts.campaigns.byStatus" :key="status" class="detail-item">
+                  {{ $utils.niceNumber(num) }} {{ $t(`campaigns.status.${status}`) || getStatusLabel(status) }}
+                  <span v-if="status === 'running'" class="running-indicator">
+                    <div class="mini-spinner"></div>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="stat-number">
+              {{ isCountsLoading ? '...' : $utils.niceNumber(counts.campaigns.total || 0) }}
+            </div>
           </div>
         </div>
 
-        <!-- Campañas -->
-        <div class="stat-card campaigns-card">
-          <div v-if="isCountsLoading" class="loading-overlay">
-            <div class="spinner"></div>
-          </div>
-          <div class="stat-content">
-            <div class="stat-header">
-              <svg class="stat-icon" width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
-              </svg>
-              <span class="stat-title">{{ $tc('globals.terms.campaign', 2) || 'Campañas' }}</span>
+        <!-- Charts Section -->
+        <div class="charts-grid">
+          <div class="chart-card">
+            <div v-if="isChartsLoading" class="loading-overlay">
+              <div class="spinner"></div>
             </div>
-            <div class="stat-details">
-              <div v-for="(num, status) in counts.campaigns.byStatus" :key="status" class="detail-item">
-                {{ $utils.niceNumber(num) }} {{ $t(`campaigns.status.${status}`) || getStatusLabel(status) }}
-                <span v-if="status === 'running'" class="running-indicator">
-                  <div class="mini-spinner"></div>
-                </span>
+            <h3 class="chart-title">
+              {{ $t('dashboard.campaignViews') || 'Vista de campaña' }}
+            </h3>
+            <div class="chart-container">
+              <Chart v-if="campaignViews && !isChartsLoading" type="line" :data="campaignViews" />
+              <div v-else class="chart-placeholder">
+                <div class="chart-zero">1</div>
               </div>
             </div>
           </div>
-          <div class="stat-number">
-            {{ isCountsLoading ? '...' : $utils.niceNumber(counts.campaigns.total || 0) }}
-          </div>
-        </div>
-      </div>
 
-      <!-- Charts Section -->
-      <div class="charts-grid">
-        <div class="chart-card">
-          <div v-if="isChartsLoading" class="loading-overlay">
-            <div class="spinner"></div>
-          </div>
-          <h3 class="chart-title">
-            {{ $t('dashboard.campaignViews') || 'Vista de campaña' }}
-          </h3>
-          <div class="chart-container">
-            <Chart v-if="campaignViews && !isChartsLoading" type="line" :data="campaignViews" />
-            <div v-else class="chart-placeholder">
-              <div class="chart-zero">1</div>
+          <div class="chart-card">
+            <div v-if="isChartsLoading" class="loading-overlay">
+              <div class="spinner"></div>
+            </div>
+            <h3 class="chart-title chart-title-right">
+              {{ $t('dashboard.linkClicks') || 'Enlaces cliqueados' }}
+            </h3>
+            <div class="chart-container">
+              <Chart v-if="campaignClicks && !isChartsLoading" type="line" :data="campaignClicks" />
+              <div v-else class="chart-placeholder">
+                <div class="chart-zero">1</div>
+              </div>
             </div>
           </div>
         </div>
 
-        <div class="chart-card">
-          <div v-if="isChartsLoading" class="loading-overlay">
-            <div class="spinner"></div>
-          </div>
-          <h3 class="chart-title chart-title-right">
-            {{ $t('dashboard.linkClicks') || 'Enlaces cliqueados' }}
-          </h3>
-          <div class="chart-container">
-            <Chart v-if="campaignClicks && !isChartsLoading" type="line" :data="campaignClicks" />
-            <div v-else class="chart-placeholder">
-              <div class="chart-zero">1</div>
-            </div>
-          </div>
-        </div>
+        <!-- Cache Notice -->
+        <p v-if="settings && settings['app.cache_slow_queries']" class="cache-notice">
+          *{{ $t('globals.messages.slowQueriesCached') }}
+          <a href="https://listmonk.app/docs/maintenance/performance/" target="_blank" rel="noopener noreferrer" class="cache-link">
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+            {{ $t('globals.buttons.learnMore') }}
+          </a>
+        </p>
       </div>
-
-      <!-- Cache Notice -->
-      <p v-if="settings && settings['app.cache_slow_queries']" class="cache-notice">
-        *{{ $t('globals.messages.slowQueriesCached') }}
-        <a href="https://listmonk.app/docs/maintenance/performance/" target="_blank" rel="noopener noreferrer" class="cache-link">
-          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-          </svg>
-          {{ $t('globals.buttons.learnMore') }}
-        </a>
-      </p>
     </section>
 
     <!-- Right Sidebar -->
@@ -331,34 +333,44 @@ export default {
 <style scoped>
 .dashboard-layout {
   display: flex;
-  min-height: 100vh;
+  height: 95%;
   background-color: #ffffff;
 }
 
 .dashboard-content {
   flex: 1;
-  padding: 2rem;
-  overflow-y: auto;
-  max-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  overflow: hidden;
 }
 
 .right-sidebar {
   width: 320px;
   padding: 2rem 1.5rem;
-  border-left: 1px solid #e5e7eb;
   background-color: #ffffff;
   overflow-y: auto;
   max-height: 100vh;
 }
 
 .dashboard-header {
-  margin-bottom: 2rem;
+  margin-bottom: 0;
+}
+
+.scrollable-area {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
 }
 
 .dashboard-title {
   font-size: 1.5rem;
   font-weight: 600;
   color: #1f2937;
+  padding: 0;
   margin: 0;
 }
 

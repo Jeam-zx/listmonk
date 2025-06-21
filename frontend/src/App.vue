@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <b-navbar :fixed-top="true" v-if="$root.isLoaded">
+    <b-navbar :fixed-top="true" v-if="$root.isLoaded" class="seamless-navbar">
       <template #brand>
         <div class="logo">
           <router-link :to="{ name: 'dashboard' }">
@@ -39,19 +39,13 @@
     </b-navbar>
 
     <div class="wrapper" v-if="$root.isLoaded">
-      <section class="sidebar">
-        <div class="sidebar-container">
-          <b-sidebar position="static" mobile="hide" :fullheight="true" :open="true" :can-cancel="false">
             <div class="sidebar-content">
               <b-menu :accordion="false">
                 <navigation v-if="!isMobile" :is-mobile="isMobile" :active-item="activeItem" :active-group="activeGroup"
                   @toggleGroup="toggleGroup" />
               </b-menu>
             </div>
-          </b-sidebar>
-        </div>
-      </section>
-
+          
       <div class="main">
         <div class="global-notices" v-if="isGlobalNotices">
           <div v-if="serverConfig.needs_restart" class="notification is-danger">
@@ -214,26 +208,62 @@ export default Vue.extend({
 @import "assets/style.scss";
 @import "assets/icons/fontello.css";
 
-/* Simple sidebar styling to match the screenshot */
+html, body {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Remove rigid divisions and create seamless design */
+#app {
+  background-color: #ffffff;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Seamless navbar without bottom border */
+.seamless-navbar {
+  background-color: #ffffff !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.logo .full {
+  width: 100px;
+  height: 50px;
+}
+
+/* Seamless sidebar - no padding, borders, or separation */
 .sidebar {
-  padding: 1rem;
+  padding: 0.75rem 0.75rem 0.75rem 1rem;
+  background-color: transparent;
 }
 
 .sidebar-container {
+  margin-left: 2rem;
   background-color: white;
+  border-radius: 1.25rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
   overflow: hidden;
-  height: calc(100vh - 2rem);
-  margin-top: 1rem;
-  border: 1px solid #f3f4f6;
+  height: calc(100vh - 4.5rem);
+  border: 1px solid rgba(229, 231, 235, 0.5);
+  transition: all 0.2s ease;
+}
+
+.sidebar-container:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
 .sidebar-content {
   height: 100%;
-  overflow-y: auto;
+  overflow-y: hidden;
   padding: 0;
 }
 
-/* Override Buefy sidebar styles */
+/* Override Buefy sidebar styles for seamless look */
 .sidebar .sidebar-container .sidebar {
   background-color: transparent !important;
   border-right: none !important;
@@ -244,18 +274,35 @@ export default Vue.extend({
   background-color: transparent !important;
 }
 
-/* Layout adjustments */
+/* Seamless layout - no gaps between components */
 .wrapper {
   display: flex;
-  min-height: calc(100vh - 3.25rem);
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  gap: 0;
+  padding-top: 0.5rem;
 }
 
 .main {
   flex: 1;
-  padding-left: 1rem;
+  padding: 0.75rem 1rem 1rem 0.5rem;
+  background-color: transparent;
 }
 
-/* Mobile adjustments */
+/* Remove borders from global notices */
+.global-notices .notification {
+  border: none;
+  border-radius: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* Ensure content flows seamlessly */
+.main > * {
+  background-color: transparent;
+}
+
+/* Mobile adjustments for seamless design */
 @media (max-width: 768px) {
   .sidebar {
     padding: 0.5rem;
@@ -263,12 +310,33 @@ export default Vue.extend({
   
   .sidebar-container {
     border-radius: 1rem;
-    margin-top: 0.5r  em;
-    height: calc(100vh - 1rem);
+    height: calc(100vh - 4rem);
   }
   
   .main {
-    padding-left: 0.5rem;
+    padding: 0.5rem;
+    overflow: hidden;
   }
+  
+  .wrapper {
+    padding-top: 0.25rem;
+  }
+}
+
+/* Additional seamless styling */
+.router-view {
+  background-color: transparent !important;
+}
+
+/* Remove any remaining borders from child components */
+* {
+  border-color: transparent;
+}
+
+/* Ensure smooth transitions between all components */
+.sidebar-container,
+.main,
+.seamless-navbar {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 </style>
