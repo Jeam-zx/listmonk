@@ -104,6 +104,8 @@
     "campaigns.unSchedule": "Cancelar programación",
     "campaigns.views": "Vistas",
     "campaigns.visual": "Visual",
+    "dashboard.notifications": "Notificaciones y alertas",
+    "dashboard.recentCampaigns": "Campañas recientes",
     "dashboard.campaignViews": "Vista de campaña",
     "dashboard.linkClicks": "Enlaces cliqueados",
     "dashboard.messagesSent": "Mensajes enviados",

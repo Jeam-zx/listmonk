@@ -40,18 +40,18 @@
 
     <div class="wrapper" v-if="$root.isLoaded">
       <section class="sidebar">
-        <b-sidebar position="static" mobile="hide" :fullheight="true" :open="true" :can-cancel="false">
-          <div>
-            <b-menu :accordion="false">
-              <navigation v-if="!isMobile" :is-mobile="isMobile" :active-item="activeItem" :active-group="activeGroup"
-                @toggleGroup="toggleGroup" />
-            </b-menu>
-          </div>
-        </b-sidebar>
+        <div class="sidebar-container">
+          <b-sidebar position="static" mobile="hide" :fullheight="true" :open="true" :can-cancel="false">
+            <div class="sidebar-content">
+              <b-menu :accordion="false">
+                <navigation v-if="!isMobile" :is-mobile="isMobile" :active-item="activeItem" :active-group="activeGroup"
+                  @toggleGroup="toggleGroup" />
+              </b-menu>
+            </div>
+          </b-sidebar>
+        </div>
       </section>
-      <!-- sidebar-->
 
-      <!-- body //-->
       <div class="main">
         <div class="global-notices" v-if="isGlobalNotices">
           <div v-if="serverConfig.needs_restart" class="notification is-danger">
@@ -126,14 +126,10 @@ export default Vue.extend({
 
   watch: {
     $route(to) {
-      // Set the current route name to true for active+expanded keys in the
-      // menu to pick up.
       this.activeItem = { [to.name]: true };
       if (to.meta.group) {
         this.activeGroup = { [to.meta.group]: true };
       } else {
-        // Reset activeGroup to collapse menu items on navigating
-        // to non group items from sidebar
         this.activeGroup = {};
       }
     },
@@ -148,8 +144,6 @@ export default Vue.extend({
       this.$api.reloadApp().then(() => {
         this.$utils.toast('Reloading app ...');
 
-        // Poll until there's a 200 response, waiting for the app
-        // to restart and come back up.
         const pollId = setInterval(() => {
           this.$api.getHealth().then(() => {
             clearInterval(pollId);
@@ -205,8 +199,6 @@ export default Vue.extend({
   },
 
   mounted() {
-    // Lists is required across different views. On app load, fetch the lists
-    // and have them in the store.
     this.$api.getLists({ minimal: true, per_page: 'all' });
 
     window.addEventListener('resize', () => {
@@ -221,4 +213,62 @@ export default Vue.extend({
 <style lang="scss">
 @import "assets/style.scss";
 @import "assets/icons/fontello.css";
+
+/* Simple sidebar styling to match the screenshot */
+.sidebar {
+  padding: 1rem;
+}
+
+.sidebar-container {
+  background-color: white;
+  overflow: hidden;
+  height: calc(100vh - 2rem);
+  margin-top: 1rem;
+  border: 1px solid #f3f4f6;
+}
+
+.sidebar-content {
+  height: 100%;
+  overflow-y: auto;
+  padding: 0;
+}
+
+/* Override Buefy sidebar styles */
+.sidebar .sidebar-container .sidebar {
+  background-color: transparent !important;
+  border-right: none !important;
+  box-shadow: none !important;
+}
+
+.sidebar .sidebar-container .sidebar-content {
+  background-color: transparent !important;
+}
+
+/* Layout adjustments */
+.wrapper {
+  display: flex;
+  min-height: calc(100vh - 3.25rem);
+}
+
+.main {
+  flex: 1;
+  padding-left: 1rem;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .sidebar {
+    padding: 0.5rem;
+  }
+  
+  .sidebar-container {
+    border-radius: 1rem;
+    margin-top: 0.5r  em;
+    height: calc(100vh - 1rem);
+  }
+  
+  .main {
+    padding-left: 0.5rem;
+  }
+}
 </style>

@@ -1,110 +1,151 @@
 <template>
-  <b-menu-list>
-    <b-menu-item :to="{ name: 'dashboard' }" tag="router-link" :active="activeItem.dashboard"
-      icon="view-dashboard-variant-outline" :label="$t('menu.dashboard')" /><!-- dashboard -->
+  <div class="sidebar-container">
+    <nav class="main-nav">
+      <!-- Dashboard -->
+      <router-link :to="{ name: 'dashboard' }" class="nav-item" :class="{ 'is-active': activeItem.dashboard }" data-cy="dashboard">
+        <b-icon icon="view-grid-outline" />
+        <span class="nav-label">{{ $t('globals.terms.dashboard') }}</span>
+      </router-link>
 
-    <b-menu-item :expanded="activeGroup.lists" :active="activeGroup.lists" data-cy="lists"
-      @update:active="(state) => toggleGroup('lists', state)" icon="format-list-bulleted-square"
-      :label="$t('globals.terms.lists')">
-      <b-menu-item :to="{ name: 'lists' }" tag="router-link" :active="activeItem.lists" data-cy="all-lists"
-        icon="format-list-bulleted-square" :label="$t('menu.allLists')" />
-      <b-menu-item :to="{ name: 'forms' }" tag="router-link" :active="activeItem.forms" class="forms"
-        icon="newspaper-variant-outline" :label="$t('menu.forms')" />
-    </b-menu-item><!-- lists -->
+      <!-- Lists -->
+      <router-link :to="{ name: 'lists' }" class="nav-item" :class="{ 'is-active': activeItem.lists }" data-cy="lists">
+        <b-icon icon="format-list-bulleted-square" />
+        <span class="nav-label">{{ $t('globals.terms.lists', 2) }}</span>
+      </router-link>
 
-    <b-menu-item v-if="$can('subscribers:*')" :expanded="activeGroup.subscribers" :active="activeGroup.subscribers"
-      data-cy="subscribers" @update:active="(state) => toggleGroup('subscribers', state)" icon="account-multiple"
-      :label="$t('globals.terms.subscribers')">
-      <b-menu-item v-if="$can('subscribers:get_all', 'subscribers:get')" :to="{ name: 'subscribers' }" tag="router-link"
-        :active="activeItem.subscribers" data-cy="all-subscribers" icon="account-multiple"
-        :label="$t('menu.allSubscribers')" />
-      <b-menu-item v-if="$can('subscribers:import')" :to="{ name: 'import' }" tag="router-link"
-        :active="activeItem.import" data-cy="import" icon="file-upload-outline" :label="$t('menu.import')" />
-      <b-menu-item v-if="$can('bounces:get')" :to="{ name: 'bounces' }" tag="router-link" :active="activeItem.bounces"
-        data-cy="bounces" icon="email-bounce" :label="$t('globals.terms.bounces')" />
-    </b-menu-item><!-- subscribers -->
+      <!-- Campaigns -->
+      <router-link :to="{ name: 'campaigns' }" class="nav-item" :class="{ 'is-active': activeItem.campaigns }" data-cy="campaigns">
+        <b-icon icon="rocket-launch-outline" />
+        <span class="nav-label">{{ $t('globals.terms.campaigns', 2) }}</span>
+      </router-link>
 
-    <b-menu-item v-if="$can('campaigns:*')" :expanded="activeGroup.campaigns" :active="activeGroup.campaigns"
-      data-cy="campaigns" @update:active="(state) => toggleGroup('campaigns', state)" icon="rocket-launch-outline"
-      :label="$t('globals.terms.campaigns')">
-      <b-menu-item v-if="$can('campaigns:get')" :to="{ name: 'campaigns' }" tag="router-link"
-        :active="activeItem.campaigns" data-cy="all-campaigns" icon="rocket-launch-outline"
-        :label="$t('menu.allCampaigns')" />
-      <b-menu-item v-if="$can('campaigns:manage')" :to="{ name: 'campaign', params: { id: 'new' } }" tag="router-link"
-        :active="activeItem.campaign" data-cy="new-campaign" icon="plus" :label="$t('menu.newCampaign')" />
-      <b-menu-item v-if="$can('media:*')" :to="{ name: 'media' }" tag="router-link" :active="activeItem.media"
-        data-cy="media" icon="image-outline" :label="$t('menu.media')" />
-      <b-menu-item v-if="$can('templates:get')" :to="{ name: 'templates' }" tag="router-link"
-        :active="activeItem.templates" data-cy="templates" icon="file-image-outline"
-        :label="$t('globals.terms.templates')" />
-      <b-menu-item v-if="$can('campaigns:get_analytics')" :to="{ name: 'campaignAnalytics' }" tag="router-link"
-        :active="activeItem.campaignAnalytics" data-cy="analytics" icon="chart-bar"
-        :label="$t('globals.terms.analytics')" />
-    </b-menu-item><!-- campaigns -->
+      <!-- Subscribers -->
+      <router-link :to="{ name: 'subscribers' }" class="nav-item" :class="{ 'is-active': activeItem.subscribers }" data-cy="subscribers">
+        <b-icon icon="account-multiple-outline" />
+        <span class="nav-label">{{ $t('globals.terms.subscribers', 2) }}</span>
+      </router-link>
 
-    <b-menu-item v-if="$can('users:*', 'roles:*')" :expanded="activeGroup.users" :active="activeGroup.users"
-      data-cy="users" @update:active="(state) => toggleGroup('users', state)" icon="account-multiple"
-      :label="$t('globals.terms.users')">
-      <b-menu-item v-if="$can('users:get')" :to="{ name: 'users' }" tag="router-link" :active="activeItem.users"
-        data-cy="users" icon="account-multiple" :label="$t('globals.terms.users')" />
-      <b-menu-item v-if="$can('roles:get')" :to="{ name: 'userRoles' }" tag="router-link" :active="activeItem.userRoles"
-        data-cy="userRoles" icon="newspaper-variant-outline" :label="$t('users.userRoles')" />
-      <b-menu-item v-if="$can('roles:get')" :to="{ name: 'listRoles' }" tag="router-link" :active="activeItem.listRoles"
-        data-cy="listRoles" icon="format-list-bulleted-square" :label="$t('users.listRoles')" />
-    </b-menu-item><!-- users -->
+      <!-- Templates -->
+      <router-link v-if="$can('templates:get')" :to="{ name: 'templates' }" class="nav-item" :class="{ 'is-active': activeItem.templates }" data-cy="templates">
+        <b-icon icon="file-document-outline" />
+        <span class="nav-label">{{ $t('globals.terms.templates') }}</span>
+      </router-link>
 
-    <b-menu-item v-if="$can('settings:*')" :expanded="activeGroup.settings" :active="activeGroup.settings"
-      data-cy="settings" @update:active="(state) => toggleGroup('settings', state)" icon="cog-outline"
-      :label="$t('menu.settings')">
-      <b-menu-item v-if="$can('settings:get')" :to="{ name: 'settings' }" tag="router-link"
-        :active="activeItem.settings" data-cy="all-settings" icon="cog-outline" :label="$t('menu.settings')" />
-      <b-menu-item v-if="$can('settings:maintain')" :to="{ name: 'maintenance' }" tag="router-link"
-        :active="activeItem.maintenance" data-cy="maintenance" icon="wrench-outline" :label="$t('menu.maintenance')" />
-      <b-menu-item v-if="$can('settings:get')" :to="{ name: 'logs' }" tag="router-link" :active="activeItem.logs"
-        data-cy="logs" icon="format-list-bulleted-square" :label="$t('menu.logs')" />
-    </b-menu-item><!-- settings -->
+      <!-- Media -->
+      <router-link v-if="$can('media:*')" :to="{ name: 'media' }" class="nav-item" :class="{ 'is-active': activeItem.media }" data-cy="media">
+        <b-icon icon="folder-multiple-image" />
+        <span class="nav-label">{{ $t('menu.media') }}</span>
+      </router-link>
+    </nav>
 
-    <b-menu-item v-if="isMobile" icon="logout-variant" :label="$t('users.logout')" @click.prevent="doLogout" />
-  </b-menu-list>
+    <nav class="secondary-nav">
+      <!-- Analytics -->
+      <router-link v-if="$can('campaigns:get_analytics')" :to="{ name: 'campaignAnalytics' }" class="nav-item" :class="{ 'is-active': activeItem.campaignAnalytics }" data-cy="analytics">
+        <b-icon icon="chart-line" />
+        <span class="nav-label">{{ $t('globals.terms.analytics') }}</span>
+      </router-link>
+
+      <!-- Settings -->
+      <router-link v-if="$can('settings:*')" :to="{ name: 'settings' }" class="nav-item" :class="{ 'is-active': activeItem.settings }" data-cy="settings">
+        <b-icon icon="cog-outline" />
+        <span class="nav-label">{{ $t('menu.settings') }}</span>
+      </router-link>
+    </nav>
+  </div>
 </template>
 
 <script>
-import { mapState } from 'vuex';
-
 export default {
-  name: 'Navigation',
+  name: 'NavigationRedesigned',
 
   props: {
-    activeItem: { type: Object, default: () => { } },
-    activeGroup: { type: Object, default: () => { } },
-    isMobile: Boolean,
-  },
-
-  methods: {
-    toggleGroup(group, state) {
-      this.$emit('toggleGroup', group, state);
-    },
-
-    doLogout() {
-      this.$emit('doLogout');
-    },
-  },
-
-  computed: {
-    ...mapState(['profile']),
-  },
-
-  mounted() {
-    // A hack to close the open accordion burger menu items on click.
-    // Buefy does not have a way to do this.
-    if (this.isMobile) {
-      document.querySelectorAll('.navbar li a[href]').forEach((e) => {
-        e.onclick = () => {
-          document.querySelector('.navbar-burger').click();
-        };
-      });
-    }
+    activeItem: { type: Object, default: () => ({}) },
   },
 };
-
 </script>
+
+<style scoped>
+.sidebar-container {
+  width: 250px;
+  height: 100vh;
+  background-color: #ffffff;
+  border-right: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 2rem 1.5rem;
+  font-family: 'Inter', sans-serif;
+}
+
+.main-nav,
+.secondary-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  text-decoration: none;
+  color: #4b5563;
+  font-weight: 500;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.nav-item:hover {
+  background-color: #f3f4f6;
+}
+
+.nav-item.is-active {
+  background-color: #ede9fe;
+  color: #7c3aed;
+  font-weight: 600;
+}
+
+.nav-item .icon {
+  margin-right: 1rem;
+}
+
+.nav-label {
+  font-size: 1rem;
+}
+
+@media (max-width: 768px) {
+  .sidebar-container {
+    width: 100%;
+    height: auto;
+    flex-direction: row;
+    align-items: center;
+    padding: 1rem;
+    border-top: 1px solid #e5e7eb;
+    border-right: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    background-color: #ffffff;
+    z-index: 10;
+  }
+
+  .main-nav,
+  .secondary-nav {
+    flex-direction: row;
+    justify-content: space-around;
+    width: 100%;
+  }
+
+  .nav-label {
+    display: none;
+  }
+
+  .nav-item {
+    justify-content: center;
+  }
+
+  .nav-item .icon {
+    margin-right: 0;
+  }
+}
+</style>
