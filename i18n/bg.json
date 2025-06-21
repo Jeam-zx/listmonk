@@ -105,6 +105,8 @@
     "campaigns.views": "Прегледи",
     "campaigns.visual": "Визуален",
     "dashboard.campaignViews": "Прегледи на кампании",
+    "dashboard.recentCampaigns": "Последни кампании",
+    "dashboard.notifications": "Известия",
     "dashboard.linkClicks": "Кликове върху връзки",
     "dashboard.messagesSent": "Изпратени съобщения",
     "dashboard.orphanSubs": "Без списък",
