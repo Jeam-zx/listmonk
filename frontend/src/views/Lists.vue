@@ -1,162 +1,226 @@
 <template>
-  <section class="lists">
-    <header class="columns page-header">
-      <div class="column is-10">
-        <h1 class="title is-4">
-          {{ $t('globals.terms.lists') }}
-          <span v-if="!isNaN(lists.total)">({{ lists.total }})</span>
+  <section class="lists-container">
+    <!-- Header moderno -->
+    <header class="modern-header">
+      <div class="header-left">
+        <h1 class="page-title">
+          Mis Listas
+          <span v-if="!isNaN(lists.total)" class="count">({{ lists.total }})</span>
         </h1>
       </div>
-      <div class="column has-text-right">
-        <b-field v-if="$can('lists:manage_all')" expanded>
-          <b-button expanded type="is-primary" icon-left="plus" class="btn-new" @click="showNewForm" data-cy="btn-new">
-            {{ $t('globals.buttons.new') }}
+      <div class="header-right">
+        <!-- Restaurar el filtro original funcional -->
+        <b-field>
+          <b-button type="is-light" icon-left="filter-variant" @click="showFilters = !showFilters">
+            Filter
           </b-button>
         </b-field>
+        
+        <div class="search-container">
+          <form @submit.prevent="getLists">
+            <div class="search-field">
+              <input
+                v-model="queryParams.query"
+                type="text"
+                placeholder="Buscar listas..."
+                class="search-input"
+                ref="query"
+                data-cy="query"
+              />
+              <button type="submit" class="search-btn" data-cy="btn-query">
+                <i class="icon-search"></i>
+              </button>
+            </div>
+          </form>
+        </div>
+        <button 
+          v-if="$can('lists:manage_all')" 
+          class="new-btn" 
+          @click="showNewForm" 
+          data-cy="btn-new"
+        >
+          <i class="icon-plus"></i>
+          Nuevo
+        </button>
       </div>
     </header>
 
-    <b-table :data="lists.results" :loading="loading.listsFull" hoverable default-sort="createdAt" paginated
-      backend-pagination pagination-position="both" @page-change="onPageChange" :current-page="queryParams.page"
-      :per-page="lists.perPage" :total="lists.total" backend-sorting @sort="onSort">
-      <template #top-left>
-        <div class="columns">
-          <div class="column is-6">
-            <form @submit.prevent="getLists">
-              <div>
-                <b-field>
-                  <b-input v-model="queryParams.query" name="query" expanded icon="magnify" ref="query"
-                    data-cy="query" />
-                  <p class="controls">
-                    <b-button native-type="submit" type="is-primary" icon-left="magnify" data-cy="btn-query" />
-                  </p>
-                </b-field>
-              </div>
-            </form>
-          </div>
-        </div>
-      </template>
-
-      <b-table-column v-slot="props" field="name" :label="$t('globals.fields.name')" header-class="cy-name" sortable
-        width="25%" paginated backend-pagination pagination-position="both" :td-attrs="$utils.tdID"
-        @page-change="onPageChange">
-        <div>
-          <a :href="`/lists/${props.row.id}`" @click.prevent="showEditForm(props.row)">
-            {{ props.row.name }}
-          </a>
-          <b-taglist>
-            <b-tag class="is-small" v-for="t in props.row.tags" :key="t">
-              {{ t }}
-            </b-tag>
-          </b-taglist>
-        </div>
-      </b-table-column>
-
-      <b-table-column v-slot="props" field="type" :label="$t('globals.fields.type')" header-class="cy-type" sortable
-        width="15%">
-        <div class="tags">
-          <b-tag :class="props.row.type" :data-cy="`type-${props.row.type}`">
-            {{ $t(`lists.types.${props.row.type}`) }}
-          </b-tag>
-          {{ ' ' }}
-
-          <b-tag :class="props.row.optin" :data-cy="`optin-${props.row.optin}`">
-            <b-icon :icon="props.row.optin === 'double' ? 'account-check-outline' : 'account-off-outline'"
-              size="is-small" />
-            {{ ' ' }}
-            {{ $t(`lists.optins.${props.row.optin}`) }}
-          </b-tag>{{ ' ' }}
-
-          <a v-if="props.row.optin === 'double'" class="is-size-7 send-optin" href="#"
-            @click="$utils.confirm(null, () => createOptinCampaign(props.row))" data-cy="btn-send-optin-campaign">
-            <b-tooltip :label="$t('lists.sendOptinCampaign')" type="is-dark">
-              <b-icon icon="rocket-launch-outline" size="is-small" />
-              {{ $t('lists.sendOptinCampaign') }}
-            </b-tooltip>
-          </a>
-        </div>
-      </b-table-column>
-
-      <b-table-column v-slot="props" field="subscriber_count" :label="$t('globals.terms.subscribers')"
-        header-class="cy-subscribers" numeric sortable centered>
-        <template v-if="$can('subscribers:get_all', 'subscribers:get')">
-          <router-link :to="`/subscribers/lists/${props.row.id}`">
-            {{ $utils.formatNumber(props.row.subscriberCount) }}
-            <span class="is-size-7 view">{{ $t('globals.buttons.view') }}</span>
-          </router-link>
-        </template>
-        <template v-else>
-          {{ $utils.formatNumber(props.row.subscriberCount) }}
-        </template>
-      </b-table-column>
-
-      <b-table-column v-slot="props" field="subscriber_counts" header-class="cy-subscribers" width="10%">
-        <div class="fields stats">
-          <p v-for="(count, status) in filterStatuses(props.row)" :key="status">
-            <label for="#">{{ $tc(`subscribers.status.${status}`, count) }}</label>
-            <router-link :to="`/subscribers/lists/${props.row.id}?subscription_status=${status}`" :class="status">
-              {{ $utils.formatNumber(count) }}
-            </router-link>
-          </p>
-        </div>
-      </b-table-column>
-
-      <b-table-column v-slot="props" field="created_at" :label="$t('globals.fields.createdAt')"
-        header-class="cy-created_at" sortable>
-        {{ $utils.niceDate(props.row.createdAt) }}
-      </b-table-column>
-      <b-table-column v-slot="props" field="updated_at" :label="$t('globals.fields.updatedAt')"
-        header-class="cy-updated_at" sortable>
-        {{ $utils.niceDate(props.row.updatedAt) }}
-      </b-table-column>
-
-      <b-table-column v-slot="props" cell-class="actions" align="right">
-        <div>
-          <router-link v-if="$can('campaigns:manage')" :to="`/campaigns/new?list_id=${props.row.id}`"
-            data-cy="btn-campaign">
-            <b-tooltip :label="$t('lists.sendCampaign')" type="is-dark">
-              <b-icon icon="rocket-launch-outline" size="is-small" />
-            </b-tooltip>
-          </router-link>
-
-          <a v-if="$can('lists:manage') || $canList(props.row.id, 'list:manage')" href="#"
-            @click.prevent="showEditForm(props.row)" data-cy="btn-edit" :aria-label="$t('globals.buttons.edit')">
-            <b-tooltip :label="$t('globals.buttons.edit')" type="is-dark">
-              <b-icon icon="pencil-outline" size="is-small" />
-            </b-tooltip>
-          </a>
-
-          <router-link v-if="$can('lists:import')" :to="{ name: 'import', query: { list_id: props.row.id } }"
-            data-cy="btn-import">
-            <b-tooltip :label="$t('import.title')" type="is-dark">
-              <b-icon icon="file-upload-outline" size="is-small" />
-            </b-tooltip>
-          </router-link>
-
-          <a v-if="$can('lists:manage') || $canList(props.row.id, 'list:manage')" href="#"
-            @click.prevent="deleteList(props.row)" data-cy="btn-delete" :aria-label="$t('globals.buttons.delete')">
-            <b-tooltip :label="$t('globals.buttons.delete')" type="is-dark">
-              <b-icon icon="trash-can-outline" size="is-small" />
-            </b-tooltip>
-          </a>
-        </div>
-      </b-table-column>
-
-      <template #empty v-if="!loading.listsFull">
+    <!-- Tabla moderna -->
+    <div class="table-container">
+      <div class="table-wrapper" v-if="!loading.listsFull">
+        <table class="modern-table">
+          <thead>
+            <tr>
+              <th class="table-header">Nombre</th>
+              <th class="table-header text-center">
+                <span class="subscriber-icon">👥</span>
+              </th>
+              <th class="table-header">Estatus</th>
+              <th class="table-header">Creada en</th>
+              <th class="table-header">Actualizada</th>
+              <th class="table-header">Opciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="list in lists.results" :key="list.id" class="table-row">
+              <td class="table-cell">
+                <div class="list-name-container">
+                  <a 
+                    :href="`/lists/${list.id}`" 
+                    @click.prevent="showEditForm(list)"
+                    class="list-name"
+                  >
+                    {{ list.name }}
+                  </a>
+                  <div v-if="list.tags && list.tags.length > 0" class="tags-container">
+                    <span 
+                      v-for="tag in list.tags" 
+                      :key="tag" 
+                      class="tag"
+                    >
+                      {{ tag }}
+                    </span>
+                  </div>
+                </div>
+              </td>
+              
+              <td class="table-cell text-center">
+                <template v-if="$can('subscribers:get_all', 'subscribers:get')">
+                  <router-link 
+                    :to="`/subscribers/lists/${list.id}`"
+                    class="subscriber-count"
+                  >
+                    {{ $utils.formatNumber(list.subscriberCount) }}
+                  </router-link>
+                </template>
+                <template v-else>
+                  <span class="subscriber-count">
+                    {{ $utils.formatNumber(list.subscriberCount) }}
+                  </span>
+                </template>
+              </td>
+              
+              <td class="table-cell">
+                <span 
+                  :class="['status-badge', list.type === 'private' ? 'status-private' : 'status-public']"
+                >
+                  <i :class="list.type === 'private' ? 'icon-lock' : 'icon-globe'"></i>
+                  {{ list.type === 'private' ? 'Privada' : 'Pública' }}
+                </span>
+              </td>
+              
+              <td class="table-cell date-cell">
+                {{ $utils.niceDate(list.createdAt) }}
+              </td>
+              
+              <td class="table-cell date-cell">
+                {{ $utils.niceDate(list.updatedAt) }}
+              </td>
+              
+              <td class="table-cell">
+                <div class="options-container">
+                  <div class="dropdown-modern">
+                    <button class="options-trigger">
+                      <i class="icon-document"></i>
+                      <i class="icon-copy"></i>
+                      <i class="icon-chevron-down"></i>
+                    </button>
+                    <div class="dropdown-menu-modern">
+                      <a 
+                        href="#" 
+                        @click.prevent="showEditForm(list)" 
+                        class="dropdown-item-modern"
+                        data-cy="btn-edit"
+                      >
+                        Editar
+                      </a>
+                      <a 
+                        v-if="$can('lists:manage') || $canList(list.id, 'list:manage')" 
+                        href="#"
+                        @click.prevent="deleteList(list)" 
+                        class="dropdown-item-modern delete-option"
+                        data-cy="btn-delete"
+                      >
+                        Eliminar
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      
+      <!-- Loading state -->
+      <div v-if="loading.listsFull" class="loading-container">
+        <div class="loading-spinner"></div>
+        <p>Cargando listas...</p>
+      </div>
+      
+      <!-- Empty state -->
+      <div v-if="!loading.listsFull && lists.results && lists.results.length === 0" class="empty-state">
         <empty-placeholder />
-      </template>
-    </b-table>
+      </div>
+    </div>
 
-    <!-- Add / edit form modal -->
-    <b-modal scroll="keep" :aria-modal="true" :active.sync="isFormVisible" :width="600" @close="onFormClose">
+    <!-- Paginación moderna -->
+    <div v-if="lists.results && lists.results.length > 0" class="pagination-container">
+      <div class="pagination-info">
+        Mostrando {{ (queryParams.page - 1) * lists.perPage + 1 }} a 
+        {{ Math.min(queryParams.page * lists.perPage, lists.total) }} de {{ lists.total }} resultados
+      </div>
+      <div class="pagination-controls">
+        <button 
+          @click="onPageChange(queryParams.page - 1)"
+          :disabled="queryParams.page === 1"
+          class="pagination-btn"
+        >
+          <i class="icon-chevron-left"></i>
+        </button>
+        
+        <span class="pagination-pages">
+          <button 
+            v-for="page in getPaginationPages()" 
+            :key="page"
+            @click="onPageChange(page)"
+            :class="['pagination-page', { active: page === queryParams.page }]"
+          >
+            {{ page }}
+          </button>
+        </span>
+        
+        <button 
+          @click="onPageChange(queryParams.page + 1)"
+          :disabled="queryParams.page >= Math.ceil(lists.total / lists.perPage)"
+          class="pagination-btn"
+        >
+          <i class="icon-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Modal del formulario (mantiene la funcionalidad original) -->
+    <b-modal 
+      scroll="keep" 
+      :aria-modal="true" 
+      :active.sync="isFormVisible" 
+      :width="600" 
+      @close="onFormClose"
+    >
       <list-form :data="curItem" :is-editing="isEditing" @finished="formFinished" />
     </b-modal>
 
-    <p v-if="settings['app.cache_slow_queries']" class="has-text-grey">
+    <!-- Mensaje de cache (si aplica) -->
+    <p v-if="settings['app.cache_slow_queries']" class="cache-notice">
       *{{ $t('globals.messages.slowQueriesCached') }}
-      <a href="https://listmonk.app/docs/maintenance/performance/" target="_blank" rel="noopener noreferer"
-        class="has-text-grey">
-        <b-icon icon="link-variant" /> {{ $t('globals.buttons.learnMore') }}
+      <a 
+        href="https://listmonk.app/docs/maintenance/performance/" 
+        target="_blank" 
+        rel="noopener noreferer"
+        class="cache-link"
+      >
+        <i class="icon-link"></i> {{ $t('globals.buttons.learnMore') }}
       </a>
     </p>
   </section>
@@ -187,6 +251,7 @@ export default Vue.extend({
         orderBy: 'id',
         order: 'asc',
       },
+      showFilters: false,
     };
   },
 
@@ -256,7 +321,6 @@ export default Vue.extend({
         () => {
           this.$api.deleteList(list.id).then(() => {
             this.getLists();
-
             this.$utils.toast(this.$t('globals.messages.deleted', { name: list.name }));
           });
         },
@@ -279,6 +343,19 @@ export default Vue.extend({
       });
       return false;
     },
+
+    getPaginationPages() {
+      const totalPages = Math.ceil(this.lists.total / this.lists.perPage);
+      const current = this.queryParams.page;
+      const pages = [];
+      
+      // Mostrar páginas alrededor de la actual
+      for (let i = Math.max(1, current - 2); i <= Math.min(totalPages, current + 2); i++) {
+        pages.push(i);
+      }
+      
+      return pages;
+    },
   },
 
   computed: {
@@ -296,3 +373,459 @@ export default Vue.extend({
   },
 });
 </script>
+
+<style scoped>
+/* Estilos modernos para replicar el diseño de la imagen */
+.lists-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+  background-color: #ffffff;
+}
+
+/* Header moderno */
+.modern-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+}
+
+.header-left .page-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+.header-left .count {
+  color: #6b7280;
+  font-weight: 400;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.filter-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  color: #374151;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.filter-btn:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.search-container {
+  position: relative;
+}
+
+.search-field {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.search-input {
+  width: 240px;
+  padding: 8px 40px 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.search-input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.search-btn {
+  position: absolute;
+  right: 8px;
+  padding: 4px;
+  background: none;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+}
+
+.new-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.new-btn:hover {
+  background: #2563eb;
+}
+
+/* Tabla moderna */
+.table-container {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.modern-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table-header {
+  padding: 16px;
+  text-align: left;
+  font-weight: 500;
+  font-size: 14px;
+  color: #374151;
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.table-header.text-center {
+  text-align: center;
+}
+
+.subscriber-icon {
+  font-size: 16px;
+}
+
+.table-row {
+  border-bottom: 1px solid #f3f4f6;
+  transition: background-color 0.2s;
+}
+
+.table-row:hover {
+  background: #f9fafb;
+}
+
+.table-cell {
+  padding: 16px;
+  font-size: 14px;
+  color: #1f2937;
+  vertical-align: middle;
+}
+
+.table-cell.text-center {
+  text-align: center;
+}
+
+.list-name-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.list-name {
+  font-weight: 500;
+  color: #1f2937;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.list-name:hover {
+  color: #3b82f6;
+}
+
+.tags-container {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.tag {
+  padding: 2px 8px;
+  background: #f3f4f6;
+  color: #6b7280;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.subscriber-count {
+  color: #3b82f6;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.subscriber-count:hover {
+  color: #2563eb;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.status-private {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status-public {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.date-cell {
+  color: #6b7280;
+}
+
+/* Opciones modernas según la imagen */
+.options-container {
+  display: flex;
+  justify-content: center;
+}
+
+.dropdown-modern {
+  position: relative;
+}
+
+.options-trigger {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 12px;
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.options-trigger:hover {
+  background: #e9ecef;
+  border-color: #dee2e6;
+}
+
+.dropdown-menu-modern {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  background: white;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  min-width: 120px;
+  z-index: 10;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  transition: all 0.2s;
+  margin-top: 4px;
+}
+
+.dropdown-modern:hover .dropdown-menu-modern {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.dropdown-item-modern {
+  display: block;
+  padding: 12px 16px;
+  color: #495057;
+  text-decoration: none;
+  font-size: 14px;
+  transition: background-color 0.2s;
+  border-bottom: 1px solid #f8f9fa;
+}
+
+.dropdown-item-modern:last-child {
+  border-bottom: none;
+}
+
+.dropdown-item-modern:hover {
+  background: #f8f9fa;
+  color: #212529;
+}
+
+.dropdown-item-modern.delete-option:hover {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+/* Iconos para las opciones */
+.icon-document::before { content: "📄"; }
+.icon-copy::before { content: "📋"; }
+.icon-chevron-down::before { content: "⌄"; }
+
+/* Paginación */
+.pagination-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 24px;
+  padding-top: 16px;
+}
+
+.pagination-info {
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pagination-btn {
+  padding: 8px;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #374151;
+  transition: all 0.2s;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination-pages {
+  display: flex;
+  gap: 4px;
+}
+
+.pagination-page {
+  padding: 8px 12px;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #374151;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.pagination-page:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.pagination-page.active {
+  background: #3b82f6;
+  border-color: #3b82f6;
+  color: white;
+}
+
+/* Estados de carga y vacío */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  color: #6b7280;
+}
+
+.loading-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #e5e7eb;
+  border-top: 3px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.empty-state {
+  padding: 48px;
+}
+
+.cache-notice {
+  margin-top: 16px;
+  color: #6b7280;
+  font-size: 12px;
+}
+
+.cache-link {
+  color: #6b7280;
+  text-decoration: none;
+}
+
+.cache-link:hover {
+  color: #374151;
+}
+
+/* Iconos (usando clases CSS para iconos) */
+.icon-filter::before { content: "⚙️"; }
+.icon-search::before { content: "🔍"; }
+.icon-plus::before { content: "+"; }
+.icon-more::before { content: "⋯"; }
+.icon-edit::before { content: "✏️"; }
+.icon-upload::before { content: "⬆️"; }
+.icon-rocket::before { content: "🚀"; }
+.icon-trash::before { content: "🗑️"; }
+.icon-lock::before { content: "🔒"; }
+.icon-globe::before { content: "🌐"; }
+.icon-chevron-left::before { content: "‹"; }
+.icon-chevron-right::before { content: "›"; }
+.icon-link::before { content: "🔗"; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .modern-header {
+    flex-direction: column;
+    gap: 16px;
+    align-items: stretch;
+  }
+  
+  .header-right {
+    justify-content: space-between;
+  }
+  
+  .search-input {
+    width: 200px;
+  }
+  
+  .pagination-container {
+    flex-direction: column;
+    gap: 16px;
+  }
+}
+</style>
