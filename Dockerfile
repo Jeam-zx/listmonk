@@ -21,6 +21,8 @@ COPY --from=builder /src/listmonk /listmonk/listmonk
 COPY --from=builder /src/config.toml.sample /listmonk/config.toml.sample
 COPY docker-entrypoint.render.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /listmonk/listmonk /usr/local/bin/entrypoint.sh
+# IMPORTANTE: da permisos al usuario para escribir /listmonk/config.toml
+RUN chown -R listmonk:listmonk /listmonk
 ENV PORT=9000
 EXPOSE 9000
 USER listmonk
