@@ -7,10 +7,6 @@ services:
     region: oregon
     dockerfilePath: ./Dockerfile
     healthCheckPath: /admin
-    disk:
-      name: uploads
-      mountPath: /listmonk/uploads
-      sizeGB: 1
     envVars:
       - key: DATABASE_URL
         fromDatabase:
