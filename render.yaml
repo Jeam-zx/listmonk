@@ -7,9 +7,7 @@ services:
     region: oregon
     dockerfilePath: ./Dockerfile
     healthCheckPath: /admin
-    databases:
-      - name: listmonk-db
-    disks:
+    disk:
       - name: uploads
         mountPath: /listmonk/uploads
         sizeGB: 1
