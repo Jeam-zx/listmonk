@@ -1,6 +1,7 @@
 # Build (Go + Node para empaquetar frontend en el binario)
-FROM golang:1.22-bookworm AS builder
+FROM golang:1.24-bookworm AS builder
 WORKDIR /src
+ENV GOTOOLCHAIN=auto
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates curl git make gcc g++ pkg-config gnupg && \
     rm -rf /var/lib/apt/lists/*
@@ -9,6 +10,8 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
     npm i -g yarn
 COPY . .
 ENV CI=1
+# Fallback: generar un .gitignore vacío si no llegó en el contexto
+RUN test -f frontend/.gitignore || printf "# generated for CI\n" > frontend/.gitignore
 RUN make dist
 
 # Runtime mínimo
@@ -21,7 +24,6 @@ COPY --from=builder /src/listmonk /listmonk/listmonk
 COPY --from=builder /src/config.toml.sample /listmonk/config.toml.sample
 COPY docker-entrypoint.render.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /listmonk/listmonk /usr/local/bin/entrypoint.sh
-# IMPORTANTE: da permisos al usuario para escribir /listmonk/config.toml
 RUN chown -R listmonk:listmonk /listmonk
 ENV PORT=9000
 EXPOSE 9000

@@ -2,7 +2,6 @@
 **/.dockerignore
 **/.env
 **/.git
-**/.gitignore
 **/.project
 **/.settings
 **/.toolstarget
@@ -15,9 +14,9 @@
 **/bin
 **/charts
 **/docker-compose*
-# Quita esta línea para que Render vea tu Dockerfile
-# **/Dockerfile*
-# Asegura que no ignores tu entrypoint:
+# Quita esta línea (debe NO existir):
+# **/.gitignore
+# Asegura no ignorar el entrypoint:
 # docker-entrypoint.render.sh
 **/node_modules
 **/npm-debug.log
