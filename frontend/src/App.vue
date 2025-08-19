@@ -45,7 +45,7 @@
                   @toggleGroup="toggleGroup" />
               </b-menu>
             </div>
-          
+
       <div class="main">
         <div class="global-notices" v-if="isGlobalNotices">
           <div v-if="serverConfig.needs_restart" class="notification is-danger">
@@ -307,17 +307,17 @@ html, body {
   .sidebar {
     padding: 0.5rem;
   }
-  
+
   .sidebar-container {
     border-radius: 1rem;
     height: calc(100vh - 4rem);
   }
-  
+
   .main {
     padding: 0.5rem;
     overflow: hidden;
   }
-  
+
   .wrapper {
     padding-top: 0.25rem;
   }

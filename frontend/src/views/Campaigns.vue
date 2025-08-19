@@ -4,13 +4,13 @@
     <div class="page-header">
       <h1 class="page-title">Mis Campañas</h1>
       <div class="header-actions">
-        <button class="filter-btn">
+        <button type="button" class="filter-btn">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46"></polygon>
+            <polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46" />
           </svg>
           Filter
         </button>
-        
+
         <!-- Search integrated in header -->
         <div class="search-container-header">
           <input
@@ -18,23 +18,25 @@
             @input="getCampaigns"
             type="text"
             placeholder="Nombre o asunto"
+            aria-label="Nombre o asunto"
             class="search-input-header"
           />
           <svg class="search-icon-header" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="11" cy="11" r="8"></circle>
-            <path d="m21 21-4.35-4.35"></path>
+            <circle cx="11" cy="11" r="8" />
+            <path d="m21 21-4.35-4.35" />
           </svg>
         </div>
 
-        <button 
-          v-if="$can('campaigns:manage')" 
+        <button
+          v-if="$can('campaigns:manage')"
+          type="button"
           @click="$router.push({ name: 'campaign', params: { id: 'new' } })"
           class="nuevo-btn"
           data-cy="btn-new"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="12" y1="5" x2="12" y2="19"></line>
-            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <line x1="12" y1="5" x2="12" y2="19" />
+            <line x1="5" y1="12" x2="19" y2="12" />
           </svg>
           Nuevo
         </button>
@@ -44,9 +46,9 @@
     <!-- Table -->
     <div class="table-container">
       <div v-if="loading.campaigns" class="loading-overlay">
-        <div class="spinner"></div>
+        <div class="spinner" />
       </div>
-      
+
       <table class="campaigns-table">
         <thead>
           <tr>
@@ -63,12 +65,12 @@
             <th @click="onSort('bounces', queryParams.order === 'asc' ? 'desc' : 'asc')">
               Rebotes
             </th>
-            <th></th> <!-- Columna para opciones -->
+            <th /> <!-- Columna para opciones -->
           </tr>
         </thead>
         <tbody class="scrollable-tbody">
-          <tr 
-            v-for="campaign in campaigns.results" 
+          <tr
+            v-for="campaign in campaigns.results"
             :key="campaign.id"
             :class="{ 'row-running': campaign.status === 'running' }"
             class="table-row"
@@ -83,17 +85,17 @@
             <!-- Listas -->
             <td class="listas-cell">
               <div class="list-dropdown-container">
-                <select class="list-select">
-                  <option 
-                    v-for="list in campaign.lists" 
-                    :key="list.id" 
+                <select class="list-select" aria-label="Listas de la campaña">
+                  <option
+                    v-for="list in campaign.lists"
+                    :key="list.id"
                     :value="list.id"
                   >
                     {{ list.name }}
                   </option>
                 </select>
                 <svg class="dropdown-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <polyline points="6,9 12,15 18,9"></polyline>
+                  <polyline points="6,9 12,15 18,9" />
                 </svg>
               </div>
             </td>
@@ -110,7 +112,7 @@
 
             <!-- Rebotes -->
             <td class="stats-cell">
-              <router-link 
+              <router-link
                 :to="{ name: 'bounces', query: { campaign_id: campaign.id } }"
                 class="bounces-link"
               >
@@ -121,29 +123,32 @@
             <!-- Opciones (solo flecha hacia abajo) -->
             <td class="opciones-cell">
               <div class="opciones-dropdown-container">
-                <button 
+                <button
+                  type="button"
                   class="opciones-dropdown-arrow"
                   @click.stop="toggleActionsMenu(campaign.id)"
                   :class="{ 'active': activeDropdown === campaign.id }"
                 >
                   <svg class="dropdown-arrow-only" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="6,9 12,15 18,9"></polyline>
+                    <polyline points="6,9 12,15 18,9" />
                   </svg>
                 </button>
-                
+
                 <!-- Dropdown Menu -->
-                <div 
-                  v-if="activeDropdown === campaign.id" 
+                <div
+                  v-if="activeDropdown === campaign.id"
                   class="actions-menu"
                   @click.stop
                 >
-                  <button 
+                  <button
+                    type="button"
                     @click="editCampaign(campaign)"
                     class="menu-item"
                   >
                     Editar
                   </button>
-                  <button 
+                  <button
+                    type="button"
                     @click="deleteCampaign(campaign)"
                     class="menu-item menu-item-danger"
                   >
@@ -163,7 +168,8 @@
 
       <!-- Pagination -->
       <div v-if="campaigns.total > campaigns.perPage" class="pagination">
-        <button 
+        <button
+          type="button"
           @click="onPageChange(queryParams.page - 1)"
           :disabled="queryParams.page <= 1"
           class="pagination-btn"
@@ -171,7 +177,8 @@
           ‹
         </button>
         <span class="pagination-current">{{ queryParams.page }}</span>
-        <button 
+        <button
+          type="button"
           @click="onPageChange(queryParams.page + 1)"
           :disabled="queryParams.page >= Math.ceil(campaigns.total / campaigns.perPage)"
           class="pagination-btn"
@@ -182,12 +189,12 @@
     </div>
 
     <!-- Campaign Preview Modal -->
-    <campaign-preview 
-      v-if="previewItem" 
-      type="campaign" 
-      :id="previewItem.id" 
+    <campaign-preview
+      v-if="previewItem"
+      type="campaign"
+      :id="previewItem.id"
       :title="previewItem.name"
-      @close="closePreview" 
+      @close="closePreview"
     />
   </div>
 </template>
@@ -399,7 +406,7 @@ export default Vue.extend({
   mounted() {
     this.getCampaigns();
     this.pollStats();
-    
+
     document.addEventListener('click', () => {
       this.activeDropdown = null;
     });
@@ -591,18 +598,12 @@ export default Vue.extend({
   letter-spacing: 0.5px;
 }
 
-
 /* Elimina el borde inferior por defecto de las celdas */
 .campaigns-table td {
   padding: 1.2rem 1.25rem;
   border-bottom: none;
   vertical-align: middle;
   background: #ffffff; /* Fondo para que el borde se vea bien */
-}
-
-/* Estilo para la fila completa */
-.table-row {
-  /* La magia está en aplicar el borde a las celdas y redondear las de los extremos */
 }
 
 .table-row td {

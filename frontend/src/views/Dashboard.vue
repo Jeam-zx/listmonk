@@ -30,7 +30,7 @@
           <!-- Mis Listas -->
           <div class="stat-card lists-card">
             <div v-if="isCountsLoading" class="loading-overlay">
-              <div class="spinner"></div>
+              <div class="spinner" />
             </div>
             <div class="stat-content">
               <div class="stat-header">
@@ -40,10 +40,22 @@
                 <span class="stat-title">{{ $tc('globals.terms.list', 2) || 'Listas' }}</span>
               </div>
               <div class="stat-details">
-                <div class="detail-item">{{ $utils.niceNumber(counts.lists.public || 0) }} {{ $t('lists.types.public') || 'Pública' }}</div>
-                <div class="detail-item">{{ $utils.niceNumber(counts.lists.private || 0) }} {{ $t('lists.types.private') || 'Privada' }}</div>
-                <div class="detail-item">{{ $utils.niceNumber(counts.lists.optinSingle || 0) }} {{ $t('lists.optins.single') || 'Confirmación simple' }}</div>
-                <div class="detail-item">{{ $utils.niceNumber(counts.lists.optinDouble || 0) }} {{ $t('lists.optins.double') || 'Confirmación doble' }}</div>
+                <div class="detail-item">
+                  {{ $utils.niceNumber(counts.lists.public || 0) }}
+                  {{ $t('lists.types.public') || 'Pública' }}
+                </div>
+                <div class="detail-item">
+                  {{ $utils.niceNumber(counts.lists.private || 0) }}
+                  {{ $t('lists.types.private') || 'Privada' }}
+                </div>
+                <div class="detail-item">
+                  {{ $utils.niceNumber(counts.lists.optinSingle || 0) }}
+                  {{ $t('lists.optins.single') || 'Confirmación simple' }}
+                </div>
+                <div class="detail-item">
+                  {{ $utils.niceNumber(counts.lists.optinDouble || 0) }}
+                  {{ $t('lists.optins.double') || 'Confirmación doble' }}
+                </div>
               </div>
             </div>
             <div class="stat-number">
@@ -54,18 +66,35 @@
           <!-- Suscriptores -->
           <div class="stat-card subscribers-card">
             <div v-if="isCountsLoading" class="loading-overlay">
-              <div class="spinner"></div>
+              <div class="spinner" />
             </div>
             <div class="stat-content">
               <div class="stat-header">
                 <svg class="stat-icon" width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="
+                      M12 4.354a4 4 0 110 5.292
+                      M15 21H3v-1a6 6 0 0112 0v1
+                      zm0 0h6v-1a6 6 0 00-9-5.197
+                      m13.5-9a2.5 2.5 0 11-5 0
+                      2.5 2.5 0 015 0z
+                    "
+                  />
                 </svg>
                 <span class="stat-title">{{ $tc('globals.terms.subscriber', 2) || 'Suscriptores' }}</span>
               </div>
               <div class="stat-details">
-                <div class="detail-item">{{ $utils.niceNumber(counts.subscribers.blocklisted || 0) }} {{ $t('subscribers.status.blocklisted') || 'Bloqueada' }}</div>
-                <div class="detail-item">{{ $utils.niceNumber(counts.subscribers.orphans || 0) }} {{ $t('dashboard.orphanSubs') || 'Huérfanos' }}</div>
+                <div class="detail-item">
+                  {{ $utils.niceNumber(counts.subscribers.blocklisted || 0) }}
+                  {{ $t('subscribers.status.blocklisted') || 'Bloqueada' }}
+                </div>
+                <div class="detail-item">
+                  {{ $utils.niceNumber(counts.subscribers.orphans || 0) }}
+                  {{ $t('dashboard.orphanSubs') || 'Huérfanos' }}
+                </div>
               </div>
             </div>
             <div class="stat-number">
@@ -76,20 +105,35 @@
           <!-- Campañas -->
           <div class="stat-card campaigns-card">
             <div v-if="isCountsLoading" class="loading-overlay">
-              <div class="spinner"></div>
+              <div class="spinner" />
             </div>
             <div class="stat-content">
               <div class="stat-header">
                 <svg class="stat-icon" width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="
+                      M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15
+                      M18 13a3 3 0 100-6
+                      M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14
+                      c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z
+                    "
+                  />
                 </svg>
                 <span class="stat-title">{{ $tc('globals.terms.campaign', 2) || 'Campañas' }}</span>
               </div>
               <div class="stat-details">
-                <div v-for="(num, status) in counts.campaigns.byStatus" :key="status" class="detail-item">
-                  {{ $utils.niceNumber(num) }} {{ $t(`campaigns.status.${status}`) || getStatusLabel(status) }}
+                <div
+                  v-for="(num, status) in counts.campaigns.byStatus"
+                  :key="status"
+                  class="detail-item"
+                >
+                  {{ $utils.niceNumber(num) }}
+                  {{ $t(`campaigns.status.${status}`) || getStatusLabel(status) }}
                   <span v-if="status === 'running'" class="running-indicator">
-                    <div class="mini-spinner"></div>
+                    <div class="mini-spinner" />
                   </span>
                 </div>
               </div>
@@ -104,7 +148,7 @@
         <div class="charts-grid">
           <div class="chart-card">
             <div v-if="isChartsLoading" class="loading-overlay">
-              <div class="spinner"></div>
+              <div class="spinner" />
             </div>
             <h3 class="chart-title">
               {{ $t('dashboard.campaignViews') || 'Vista de campaña' }}
@@ -119,7 +163,7 @@
 
           <div class="chart-card">
             <div v-if="isChartsLoading" class="loading-overlay">
-              <div class="spinner"></div>
+              <div class="spinner" />
             </div>
             <h3 class="chart-title chart-title-right">
               {{ $t('dashboard.linkClicks') || 'Enlaces cliqueados' }}
@@ -177,10 +221,32 @@
       <!-- Notifications and Alerts -->
       <div class="sidebar-card notifications">
         <div class="sidebar-header">
-          <svg class="sidebar-icon notification-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM4.868 19.718A10.968 10.968 0 016.75 19h2.5A10.968 10.968 0 0112 19.718M4.868 19.718A10.968 10.968 0 014 16.25v-2.5A10.968 10.968 0 014.868 11M4.868 19.718L11 13.75M19.132 19.718A10.968 10.968 0 0117.25 19h-2.5A10.968 10.968 0 0112 19.718M19.132 19.718A10.968 10.968 0 0120 16.25v-2.5A10.968 10.968 0 0119.132 11M19.132 19.718L13 13.75" />
+          <svg
+            class="sidebar-icon notification-icon"
+            width="20"
+            height="20"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="
+                M15 17h5l-5 5v-5z
+                M4.868 19.718A10.968 10.968 0 016.75 19h2.5A10.968 10.968 0 0112 19.718
+                M4.868 19.718A10.968 10.968 0 014 16.25v-2.5A10.968 10.968 0 014.868 11
+                M4.868 19.718L11 13.75
+                M19.132 19.718A10.968 10.968 0 0117.25 19h-2.5A10.968 10.968 0 0112 19.718
+                M19.132 19.718A10.968 10.968 0 0120 16.25v-2.5A10.968 10.968 0 0119.132 11
+                M19.132 19.718L13 13.75
+              "
+            />
           </svg>
-          <h3 class="sidebar-title">{{ $t('dashboard.notifications') || 'Notificaciones y Alertas' }}</h3>
+          <h3 class="sidebar-title">
+            {{ $t('dashboard.notifications') || 'Notificaciones y Alertas' }}
+          </h3>
         </div>
         <div class="sidebar-content">
           <div v-if="notifications.length === 0" class="empty-state">
@@ -188,7 +254,7 @@
           </div>
           <div v-else class="notifications-list">
             <div v-for="notification in notifications" :key="notification.id" class="notification-item">
-              <div class="notification-indicator" :class="`type-${notification.type}`"></div>
+              <div class="notification-indicator" :class="`type-${notification.type}`" />
               <div class="notification-content">
                 <p class="notification-message">{{ notification.message }}</p>
                 <span class="notification-time">{{ $utils.niceDate(notification.created_at) }}</span>
@@ -255,19 +321,19 @@ export default {
 
     formatLargeNumber(num) {
       if (num >= 1000) {
-        return (num / 1000).toFixed(1) + 'K';
+        return `${(num / 1000).toFixed(1)}K`;
       }
       return this.$utils.niceNumber(num);
     },
 
     getStatusLabel(status) {
       const labels = {
-        'draft': 'Borrador',
-        'scheduled': 'Programada',
-        'running': 'En progreso',
-        'paused': 'Pausada',
-        'finished': 'Finalizada',
-        'cancelled': 'Cancelada'
+        draft: 'Borrador',
+        scheduled: 'Programada',
+        running: 'En progreso',
+        paused: 'Pausada',
+        finished: 'Finalizada',
+        cancelled: 'Cancelada',
       };
       return labels[status] || status;
     },
@@ -279,14 +345,14 @@ export default {
           id: 1,
           name: 'Newsletter Semanal',
           status: 'finished',
-          created_at: new Date('2025-06-19')
+          created_at: new Date('2025-06-19'),
         },
         {
           id: 2,
           name: 'Promoción Especial',
           status: 'running',
-          created_at: new Date('2025-06-18')
-        }
+          created_at: new Date('2025-06-18'),
+        },
       ];
     },
 
@@ -297,14 +363,14 @@ export default {
           id: 1,
           type: 'success',
           message: 'Campaña enviada exitosamente',
-          created_at: new Date('2025-06-20')
+          created_at: new Date('2025-06-20'),
         },
         {
           id: 2,
           type: 'warning',
           message: 'Lista con suscriptores inactivos',
-          created_at: new Date('2025-06-20')
-        }
+          created_at: new Date('2025-06-20'),
+        },
       ];
     },
   },
@@ -742,27 +808,27 @@ export default {
   .dashboard-layout {
     flex-direction: column;
   }
-  
+
   .right-sidebar {
     width: 100%;
     border-left: none;
     border-top: 1px solid #e5e7eb;
     max-height: none;
   }
-  
+
   .stats-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .charts-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .dashboard-content {
     padding: 1rem;
     max-height: none;
   }
-  
+
   .stat-number {
     font-size: 3rem;
   }

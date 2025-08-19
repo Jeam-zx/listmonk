@@ -4,32 +4,39 @@
     <div class="page-header">
       <h1 class="page-title">{{ $t('globals.terms.subscribers') }}</h1>
       <div class="header-actions">
-        <button class="action-btn" @click="exportSubscribers">
+        <button type="button" class="action-btn" @click="exportSubscribers">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M21,15v4a2,2,0,0,1-2,2H5a2,2,0,0,1-2-2V15" />
             <polyline points="7,10 12,15 17,10" />
             <line x1="12" y1="15" x2="12" y2="3" />
           </svg>
         </button>
-        <button class="filter-btn" @click="showFilters = !showFilters">
+        <button type="button" class="filter-btn" @click="showFilters = !showFilters">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46"></polygon>
+            <polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46" />
           </svg>
           Filter
         </button>
         <div class="search-container-header">
-          <input v-model="queryInput" @input="onSimpleQueryInput" @keyup.enter="onSubmit" type="text"
-            :placeholder="$t('subscribers.queryPlaceholder')" class="search-input-header" />
+          <input
+            v-model="queryInput"
+            @input="onSimpleQueryInput"
+            @keyup.enter="onSubmit"
+            type="text"
+            :placeholder="$t('subscribers.queryPlaceholder')"
+            :aria-label="$t('subscribers.queryPlaceholder')"
+            class="search-input-header"
+          />
           <svg class="search-icon-header" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
             stroke-width="2">
-            <circle cx="11" cy="11" r="8"></circle>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
           </svg>
         </div>
-        <button v-if="$can('subscribers:manage')" class="new-btn" @click="showNewForm">
+        <button v-if="$can('subscribers:manage')" type="button" class="new-btn" @click="showNewForm">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="12" y1="5" x2="12" y2="19"></line>
-            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <line x1="12" y1="5" x2="12" y2="19" />
+            <line x1="5" y1="12" x2="19" y2="12" />
           </svg>
           {{ $t('globals.buttons.new') }}
         </button>
@@ -39,7 +46,7 @@
     <!-- Table container -->
     <div class="table-container">
       <div v-if="loading.subscribers" class="loading-overlay">
-        <div class="spinner"></div>
+        <div class="spinner" />
       </div>
       <table class="subscribers-table">
         <thead>
@@ -56,7 +63,7 @@
             <!-- Nombre -->
             <td class="nombre-cell">
               <span v-if="sub.status !== 'enabled'" class="status-dot"
-                :class="`status-${sub.status}`"></span>
+                :class="`status-${sub.status}`" />
               {{ sub.name }}
             </td>
 
@@ -77,24 +84,41 @@
             <!-- Opciones -->
             <td class="opciones-cell">
               <div class="opciones-dropdown-container">
-                <button class="opciones-dropdown-arrow" @click.stop="toggleActionsMenu(sub.id)"
-                  :class="{ 'active': activeDropdown === sub.id }">
+                <button
+                  type="button"
+                  class="opciones-dropdown-arrow"
+                  @click.stop="toggleActionsMenu(sub.id)"
+                  :class="{ 'active': activeDropdown === sub.id }"
+                >
                   <svg class="dropdown-arrow-only" width="16" height="16" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2">
-                    <polyline points="6,9 12,15 18,9"></polyline>
+                    <polyline points="6,9 12,15 18,9" />
                   </svg>
                 </button>
                 <div v-if="activeDropdown === sub.id" class="actions-menu" @click.stop>
-                  <button v-if="$can('subscribers:manage')" @click="showEditForm(sub)" class="menu-item">Editar</button>
-                  <button v-if="$can('subscribers:manage')" @click="deleteSubscriber(sub)"
-                    class="menu-item menu-item-danger">Eliminar</button>
+                  <button
+                    v-if="$can('subscribers:manage')"
+                    type="button"
+                    @click="showEditForm(sub)"
+                    class="menu-item"
+                  >
+                    Editar
+                  </button>
+                  <button
+                    v-if="$can('subscribers:manage')"
+                    type="button"
+                    @click="deleteSubscriber(sub)"
+                    class="menu-item menu-item-danger"
+                  >
+                    Eliminar
+                  </button>
                 </div>
               </div>
             </td>
           </tr>
         </tbody>
       </table>
-      
+
       <!-- Empty state -->
       <div v-if="!loading.subscribers && subscribers.results.length === 0" class="empty-state">
         <empty-placeholder />
@@ -102,16 +126,25 @@
 
       <!-- Pagination -->
       <div class="pagination" v-if="subscribers.total > subscribers.perPage">
-          <button class="pagination-btn" @click="onPageChange(queryParams.page - 1)" :disabled="queryParams.page <= 1">
-              ‹
-          </button>
-          <span class="pagination-current">{{ queryParams.page }}</span>
-          <button class="pagination-btn" @click="onPageChange(queryParams.page + 1)" :disabled="queryParams.page >= Math.ceil(subscribers.total / subscribers.perPage)">
-              ›
-          </button>
+        <button
+          type="button"
+          class="pagination-btn"
+          @click="onPageChange(queryParams.page - 1)"
+          :disabled="queryParams.page <= 1"
+        >
+          ‹
+        </button>
+        <span class="pagination-current">{{ queryParams.page }}</span>
+        <button
+          type="button"
+          class="pagination-btn"
+          @click="onPageChange(queryParams.page + 1)"
+          :disabled="queryParams.page >= Math.ceil(subscribers.total / subscribers.perPage)"
+        >
+          ›
+        </button>
       </div>
     </div>
-
 
     <!-- Modals -->
     <b-modal scroll="keep" :aria-modal="true" :active.sync="isBulkListFormVisible" :width="500" class="has-overflow">
@@ -255,7 +288,9 @@ export default Vue.extend({
 
     // Keep other methods from original component if they are used by modals
     showBulkListForm() { this.isBulkListFormVisible = true; },
-    bulkChangeLists(action, preconfirm, lists) { /* ... original logic ... */ },
+    bulkChangeLists() {
+      /* ... original logic ... */
+    },
     blocklistSubscribers() { /* ... original logic ... */ },
     deleteSubscribers() { /* ... original logic ... */ },
   },

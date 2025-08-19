@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: listmonk
+    env: docker
+    plan: free
+    autoDeploy: true
+    region: oregon
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /admin
+    databases:
+      - name: listmonk-db
+    disks:
+      - name: uploads
+        mountPath: /listmonk/uploads
+        sizeGB: 1
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: listmonk-db
+          property: connectionString
+      - key: LISTMONK_ADMIN_USER
+        value: admin
+      - key: LISTMONK_ADMIN_PASSWORD
+        generateValue: true
+
+databases:
+  - name: listmonk-db
+    databaseName: listmonk
+    user: listmonk
+    plan: free
+    region: oregon

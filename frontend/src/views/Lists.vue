@@ -15,7 +15,7 @@
             Filter
           </b-button>
         </b-field>
-        
+
         <div class="search-container">
           <form @submit.prevent="getLists">
             <div class="search-field">
@@ -23,23 +23,25 @@
                 v-model="queryParams.query"
                 type="text"
                 placeholder="Buscar listas..."
+                aria-label="Buscar listas..."
                 class="search-input"
                 ref="query"
                 data-cy="query"
               />
               <button type="submit" class="search-btn" data-cy="btn-query">
-                <i class="icon-search"></i>
+                <i class="icon-search" />
               </button>
             </div>
           </form>
         </div>
-        <button 
-          v-if="$can('lists:manage_all')" 
-          class="new-btn" 
-          @click="showNewForm" 
+        <button
+          v-if="$can('lists:manage_all')"
+          type="button"
+          class="new-btn"
+          @click="showNewForm"
           data-cy="btn-new"
         >
-          <i class="icon-plus"></i>
+          <i class="icon-plus" />
           Nuevo
         </button>
       </div>
@@ -65,17 +67,17 @@
             <tr v-for="list in lists.results" :key="list.id" class="table-row">
               <td class="table-cell">
                 <div class="list-name-container">
-                  <a 
-                    :href="`/lists/${list.id}`" 
+                  <a
+                    :href="`/lists/${list.id}`"
                     @click.prevent="showEditForm(list)"
                     class="list-name"
                   >
                     {{ list.name }}
                   </a>
                   <div v-if="list.tags && list.tags.length > 0" class="tags-container">
-                    <span 
-                      v-for="tag in list.tags" 
-                      :key="tag" 
+                    <span
+                      v-for="tag in list.tags"
+                      :key="tag"
                       class="tag"
                     >
                       {{ tag }}
@@ -83,10 +85,10 @@
                   </div>
                 </div>
               </td>
-              
+
               <td class="table-cell text-center">
                 <template v-if="$can('subscribers:get_all', 'subscribers:get')">
-                  <router-link 
+                  <router-link
                     :to="`/subscribers/lists/${list.id}`"
                     class="subscriber-count"
                   >
@@ -99,45 +101,45 @@
                   </span>
                 </template>
               </td>
-              
+
               <td class="table-cell">
-                <span 
+                <span
                   :class="['status-badge', list.type === 'private' ? 'status-private' : 'status-public']"
                 >
-                  <i :class="list.type === 'private' ? 'icon-lock' : 'icon-globe'"></i>
+                  <i :class="list.type === 'private' ? 'icon-lock' : 'icon-globe'" />
                   {{ list.type === 'private' ? 'Privada' : 'Pública' }}
                 </span>
               </td>
-              
+
               <td class="table-cell date-cell">
                 {{ $utils.niceDate(list.createdAt) }}
               </td>
-              
+
               <td class="table-cell date-cell">
                 {{ $utils.niceDate(list.updatedAt) }}
               </td>
-              
+
               <td class="table-cell">
                 <div class="options-container">
                   <div class="dropdown-modern">
-                    <button class="options-trigger">
-                      <i class="icon-document"></i>
-                      <i class="icon-copy"></i>
-                      <i class="icon-chevron-down"></i>
+                    <button type="button" class="options-trigger">
+                      <i class="icon-document" />
+                      <i class="icon-copy" />
+                      <i class="icon-chevron-down" />
                     </button>
                     <div class="dropdown-menu-modern">
-                      <a 
-                        href="#" 
-                        @click.prevent="showEditForm(list)" 
+                      <a
+                        href="#"
+                        @click.prevent="showEditForm(list)"
                         class="dropdown-item-modern"
                         data-cy="btn-edit"
                       >
                         Editar
                       </a>
-                      <a 
-                        v-if="$can('lists:manage') || $canList(list.id, 'list:manage')" 
+                      <a
+                        v-if="$can('lists:manage') || $canList(list.id, 'list:manage')"
                         href="#"
-                        @click.prevent="deleteList(list)" 
+                        @click.prevent="deleteList(list)"
                         class="dropdown-item-modern delete-option"
                         data-cy="btn-delete"
                       >
@@ -151,13 +153,13 @@
           </tbody>
         </table>
       </div>
-      
+
       <!-- Loading state -->
       <div v-if="loading.listsFull" class="loading-container">
-        <div class="loading-spinner"></div>
+        <div class="loading-spinner" />
         <p>Cargando listas...</p>
       </div>
-      
+
       <!-- Empty state -->
       <div v-if="!loading.listsFull && lists.results && lists.results.length === 0" class="empty-state">
         <empty-placeholder />
@@ -167,45 +169,48 @@
     <!-- Paginación moderna -->
     <div v-if="lists.results && lists.results.length > 0" class="pagination-container">
       <div class="pagination-info">
-        Mostrando {{ (queryParams.page - 1) * lists.perPage + 1 }} a 
+        Mostrando {{ (queryParams.page - 1) * lists.perPage + 1 }} a
         {{ Math.min(queryParams.page * lists.perPage, lists.total) }} de {{ lists.total }} resultados
       </div>
       <div class="pagination-controls">
-        <button 
+        <button
+          type="button"
           @click="onPageChange(queryParams.page - 1)"
           :disabled="queryParams.page === 1"
           class="pagination-btn"
         >
-          <i class="icon-chevron-left"></i>
+          <i class="icon-chevron-left" />
         </button>
-        
+
         <span class="pagination-pages">
-          <button 
-            v-for="page in getPaginationPages()" 
+          <button
+            v-for="page in getPaginationPages()"
             :key="page"
+            type="button"
             @click="onPageChange(page)"
             :class="['pagination-page', { active: page === queryParams.page }]"
           >
             {{ page }}
           </button>
         </span>
-        
-        <button 
+
+        <button
+          type="button"
           @click="onPageChange(queryParams.page + 1)"
           :disabled="queryParams.page >= Math.ceil(lists.total / lists.perPage)"
           class="pagination-btn"
         >
-          <i class="icon-chevron-right"></i>
+          <i class="icon-chevron-right" />
         </button>
       </div>
     </div>
 
     <!-- Modal del formulario (mantiene la funcionalidad original) -->
-    <b-modal 
-      scroll="keep" 
-      :aria-modal="true" 
-      :active.sync="isFormVisible" 
-      :width="600" 
+    <b-modal
+      scroll="keep"
+      :aria-modal="true"
+      :active.sync="isFormVisible"
+      :width="600"
       @close="onFormClose"
     >
       <list-form :data="curItem" :is-editing="isEditing" @finished="formFinished" />
@@ -214,13 +219,13 @@
     <!-- Mensaje de cache (si aplica) -->
     <p v-if="settings['app.cache_slow_queries']" class="cache-notice">
       *{{ $t('globals.messages.slowQueriesCached') }}
-      <a 
-        href="https://listmonk.app/docs/maintenance/performance/" 
-        target="_blank" 
+      <a
+        href="https://listmonk.app/docs/maintenance/performance/"
+        target="_blank"
         rel="noopener noreferer"
         class="cache-link"
       >
-        <i class="icon-link"></i> {{ $t('globals.buttons.learnMore') }}
+        <i class="icon-link" /> {{ $t('globals.buttons.learnMore') }}
       </a>
     </p>
   </section>
@@ -348,12 +353,12 @@ export default Vue.extend({
       const totalPages = Math.ceil(this.lists.total / this.lists.perPage);
       const current = this.queryParams.page;
       const pages = [];
-      
+
       // Mostrar páginas alrededor de la actual
-      for (let i = Math.max(1, current - 2); i <= Math.min(totalPages, current + 2); i++) {
+      for (let i = Math.max(1, current - 2); i <= Math.min(totalPages, current + 2); i += 1) {
         pages.push(i);
       }
-      
+
       return pages;
     },
   },
@@ -814,15 +819,15 @@ export default Vue.extend({
     gap: 16px;
     align-items: stretch;
   }
-  
+
   .header-right {
     justify-content: space-between;
   }
-  
+
   .search-input {
     width: 200px;
   }
-  
+
   .pagination-container {
     flex-direction: column;
     gap: 16px;
