@@ -15,7 +15,10 @@
 **/bin
 **/charts
 **/docker-compose*
-**/Dockerfile*
+# Quita esta línea para que Render vea tu Dockerfile
+# **/Dockerfile*
+# Asegura que no ignores tu entrypoint:
+# docker-entrypoint.render.sh
 **/node_modules
 **/npm-debug.log
 **/obj

@@ -1,34 +1,27 @@
-# --- Builder stage: build frontend and Go binary ---
-FROM golang:1.22-alpine AS builder
-RUN apk add --no-cache git build-base nodejs npm yarn make bash
+# Build (Go + Node para empaquetar frontend en el binario)
+FROM golang:1.22-bookworm AS builder
 WORKDIR /src
-
-# Pre-cache Go modules
-COPY go.mod go.sum ./
-RUN go mod download
-
-# Copy the rest of the source
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates curl git make gcc g++ pkg-config gnupg && \
+    rm -rf /var/lib/apt/lists/*
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get update && apt-get install -y --no-install-recommends nodejs && \
+    npm i -g yarn
 COPY . .
-
-# Build the binary and pack frontend assets into it
+ENV CI=1
 RUN make dist
 
-# --- Runtime stage ---
-FROM alpine:latest
-RUN apk --no-cache add ca-certificates tzdata shadow su-exec bash
+# Runtime mínimo
+FROM debian:bookworm-slim
+RUN useradd -r -u 10001 -m listmonk && \
+    apt-get update && apt-get install -y --no-install-recommends ca-certificates tzdata && \
+    rm -rf /var/lib/apt/lists/*
 WORKDIR /listmonk
-
-# Copy the built binary
 COPY --from=builder /src/listmonk /listmonk/listmonk
-
-# Optionally include sample config for reference
-COPY config.toml.sample /listmonk/config.toml.sample
-
-# Copy entrypoints
-COPY docker-entrypoint.sh /usr/local/bin/
-COPY docker-entrypoint.render.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.render.sh
-
+COPY --from=builder /src/config.toml.sample /listmonk/config.toml.sample
+COPY docker-entrypoint.render.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /listmonk/listmonk /usr/local/bin/entrypoint.sh
+ENV PORT=9000
 EXPOSE 9000
-ENTRYPOINT ["docker-entrypoint.render.sh"]
-CMD ["./listmonk"]
+USER listmonk
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
