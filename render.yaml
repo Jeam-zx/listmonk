@@ -5,7 +5,8 @@ services:
     plan: free
     autoDeploy: true
     region: oregon
-    image: jeamzx/listmonk:jeam-v1
+    image:
+      url: jeamzx/listmonk:jeam-v1
     healthCheckPath: /admin
     envVars:
       - key: DATABASE_URL
